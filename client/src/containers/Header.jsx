@@ -30,7 +30,7 @@ const Header = () => {
               experience. Try us, and you'll feel the difference!
             </p>
             <div
-              onClick={() => navigate("/rentals")}
+              onClick={() => navigate("/rooms")}
               className="mt-8 uppercase py-2.5 px-10 font-syne text-sm md:text-base font-semibold cursor-pointer text-white bg-mainBackground bg-opacity-50 w-fit rounded"
             >
               View rooms

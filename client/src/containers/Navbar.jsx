@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { ButtonLink } from "../components";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { HiMenu } from "react-icons/hi";
 import NavMenu from "./NavMenu";
 
 const Navbar = () => {
   const [isNavMenu, setIsNavMenu] = useState(false);
-  const location = useLocation();
   const navigate = useNavigate();
   const menu = [
     { name: "Home", link: "/" },
@@ -19,11 +18,14 @@ const Navbar = () => {
   return (
     <>
       <div className="text-white bg-secondaryBackground fixed top-0 z-30 w-full py-4 px-5 md:px-8 flex items-center justify-between gap-4">
-        <div className="logo text-base md:text-xl font-syne lg:text-2xl font-semibold">
+        <div
+          onClick={() => navigate("/")}
+          className="logo text-base md:text-xl cursor-pointer font-syne lg:text-2xl font-semibold"
+        >
           Victoria Flats
         </div>
         <div className="hidden lg:block">
-          <ButtonLink title="Sign In" link="/signin" />
+          <ButtonLink title="Sign In" onClick={() => navigate("/signin")} />
         </div>
         <div
           onClick={() => setIsNavMenu(!isNavMenu)}

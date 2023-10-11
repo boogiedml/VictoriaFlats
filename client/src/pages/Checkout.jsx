@@ -1,16 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Footer, Navbar } from "../containers";
 import { Input } from "../components";
-import { useSelector } from "react-redux";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import axios from "../../api/axios";
+import Cookies from "js-cookie";
+import { Toast } from "primereact/toast";
 
 const Checkout = () => {
-  const { cartItems } = useSelector((state) => state.cart);
+  const [isLoading, setIsLoading] = useState(false);
+  const [bookingDetails, setBookingDetails] = useState([]);
   const [fromDateTime, setFromDateTime] = useState("");
   const [toDateTime, setToDateTime] = useState("");
-  const totalPriceArr = cartItems.map(
-    (c) => c.quantity * c.product.price
-  );
-  const totalPrice = totalPriceArr.reduce((prev, next) => prev + next, 0);
+  const toast = useRef(null);
+  const token = Cookies.get("__victoria_____Flats");
+  const showError = ({ msgContent }) => {
+    toast.current.show({
+      severity: "error",
+      summary: "Error",
+      detail: msgContent,
+      life: 3000,
+    });
+  };
+
+  useEffect(() => {
+    const storedBooking = JSON.parse(localStorage.getItem("booking"));
+
+    if (storedBooking) {
+      setBookingDetails([storedBooking]);
+    }
+  }, []);
 
   const calculateHourDifference = () => {
     if (fromDateTime && toDateTime) {
@@ -26,91 +45,165 @@ const Checkout = () => {
 
   const convertToDays = (hourDifference) => {
     if (hourDifference < 24) {
-      return "1";
+      return 1;
     } else {
       const days = Math.ceil(hourDifference / 24);
       return days;
     }
   };
 
-  // Example usage:
   const hourDifference = calculateHourDifference();
   const daysString = convertToDays(hourDifference);
+
+  const totalBookingPrice =
+    bookingDetails.length > 0 ? bookingDetails[0].roomPrice * daysString : 0;
+
+  const checkoutFormik = useFormik({
+    initialValues: {
+      name: "",
+      email: "",
+      phone: "",
+      room: "",
+      guests: "",
+      checkInDate: "",
+      checkOutDate: "",
+    },
+    validationSchema: Yup.object({
+      name: Yup.string().required("Name is required"),
+      email: Yup.string().required("Email is required").email("Invalid email"),
+      phone: Yup.string().required("Phone is required"),
+      room: Yup.string().required(),
+      guests: Yup.string().required("Number of guests is required"),
+      checkInDate: Yup.string().required("Check-in date is required"),
+      checkOutDate: Yup.string().required("Check-out date is required"),
+    }),
+    onSubmit: async (values) => {
+      console.log("in");
+      console.log(values);
+      return;
+      setIsLoading(true);
+      const url = "/bookings";
+      const config = {
+        headers: {
+          token: `Bearer ${token}`,
+        },
+      };
+      try {
+        const { data } = await axios.post(url, values, config);
+        console.log(data);
+        if (!data.error) {
+          // Redirect to the authUrl after a successful submission
+          window.location.href = data.authUrl;
+        }
+      } catch (err) {
+        console.log(err);
+        const errorMessage =
+          err.message === "Network Error"
+            ? err.message
+            : err?.response?.data?.message;
+        showError({ msgContent: errorMessage });
+      } finally {
+        setIsLoading(false);
+      }
+    },
+  });
+
+  useEffect(() => {
+    checkoutFormik.setFieldValue("room", bookingDetails.roomId);
+    checkoutFormik.setFieldValue("checkInDate", fromDateTime);
+    checkoutFormik.setFieldValue("checkOutDate", toDateTime);
+  }, [fromDateTime, toDateTime]);
 
   return (
     <>
       <Navbar />
       <section className="px-5 md:px-10 lg:px-14 xl:px-20 pt-32 pb-14 md:pb-16">
-        <h2 className="text-3xl lg:text-4xl font-playFair text-headerTextColor font-semibold">
-          Checkout
-        </h2>
-        <div className="mt-8 md:mt-14">
-          <h4 className="mb-4 text-lg font-playFair text-headerTextColor font-[500]">
-            Billing Address
-          </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <Input label="Your Name" placeholder="your name..." />
-            <Input label="Your Email" placeholder="your email..." />
-            <Input label="Your Phone" placeholder="Phone" />
-            <Input label="Address" placeholder="Address" />
-            <Input label="City" placeholder="City" />
-            <Input label="State" placeholder="State" />
-            <Input
-              label="From"
-              type="datetime-local"
-              value={fromDateTime}
-              onChange={(e) => setFromDateTime(e.target.value)}
-            />
-            <Input
-              label="To"
-              type="datetime-local"
-              value={toDateTime}
-              onChange={(e) => setToDateTime(e.target.value)}
-            />
-          </div>
-        </div>
-        <div className="mt-8">
-          <h4 className="mb-4 text-lg font-playFair text-headerTextColor font-[500]">
-            Your Order
-          </h4>
-          <div className="border-t-[1px] border-gray-300">
-            <div className="flex border-b-[1px] border-gray-300">
-              <p className="basis-2/3 p-4 font-semibold">Product</p>
-              <p className="basis-1/3 p-4 font-semibold">Subtotal</p>
-            </div>
-            <>
-              {cartItems.map((c) => (
-                <div key={c.product.id} className="flex">
-                  <p className="basis-2/3 p-4 overflow-hidden whitespace-nowrap text-ellipsis">
-                    {c.product.name} × {c.quantity}
-                  </p>
-                  <p className="basis-1/3 p-4 font-mavenPro text-lg">
-                    ₦{c.product.price * c.quantity}
-                  </p>
-                </div>
-              ))}
-            </>
-            <div className="flex border-y-[1px] border-gray-300">
-              <p className="basis-2/3 p-4 font-semibold">Subtotal</p>
-              <p className="basis-1/3 p-4 font-semibold font-mavenPro text-lg">
-                ₦{totalPrice}
-              </p>
-            </div>
-            <div className="flex border-b-[1px] border-gray-300">
-              <p className="basis-2/3 p-4 font-semibold">Total</p>
-              <p className="basis-1/3 p-4 font-semibold font-mavenPro text-lg">
-                ₦{totalPrice * daysString}
-              </p>
+        <form onSubmit={checkoutFormik.handleSubmit}>
+          <h2 className="text-2xl lg:text-3xl font-syne text-headerTextColor font-semibold">
+            Checkout
+          </h2>
+          <div className="mt-8 md:mt-14">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <Input
+                label="Your Name"
+                placeholder="your name..."
+                name="name"
+                onChange={checkoutFormik.handleChange}
+                defaultValue={checkoutFormik.values.name}
+                onBlur={checkoutFormik.handleBlur}
+              />
+              <Input
+                label="Your Email"
+                placeholder="your email..."
+                name="email"
+                onChange={checkoutFormik.handleChange}
+                defaultValue={checkoutFormik.values.email}
+                onBlur={checkoutFormik.handleBlur}
+              />
+              <Input
+                label="Your Phone"
+                placeholder="Phone"
+                name="phone"
+                onChange={checkoutFormik.handleChange}
+                defaultValue={checkoutFormik.values.phone}
+                onBlur={checkoutFormik.handleBlur}
+              />
+              <Input label="No of guests" placeholder="No of guests" />
+              <Input
+                label="Check In"
+                type="datetime-local"
+                value={fromDateTime}
+                onChange={(e) => setFromDateTime(e.target.value)}
+              />
+              <Input
+                label="Check Out"
+                type="datetime-local"
+                value={toDateTime}
+                onChange={(e) => setToDateTime(e.target.value)}
+              />
             </div>
           </div>
-          <div className="flex justify-end">
-            <div className="mt-8 uppercase py-2.5 px-10 font-mavenPro font-semibold cursor-pointer text-white bg-secondaryBackground w-full md:w-fit text-center rounded">
-              Place order
+          <div className="mt-8">
+            <h4 className="mb-4 text-lg font-playFair text-headerTextColor font-[500]">
+              Your Bookings
+            </h4>
+            <div className="border-t-[1px] border-gray-300">
+              <div className="flex border-b-[1px] border-gray-300">
+                <p className="basis-2/3 p-4 font-semibold">Room</p>
+                <p className="basis-1/3 p-4 font-semibold">Price per night</p>
+              </div>
+              <>
+                {bookingDetails.map((booking, index) => (
+                  <div key={index} className="flex">
+                    <p className="basis-2/3 p-4 overflow-hidden whitespace-nowrap text-ellipsis">
+                      {booking.roomName}
+                    </p>
+                    <p className="basis-1/3 p-4 text-lg">
+                      ₦{booking.roomPrice}
+                    </p>
+                  </div>
+                ))}
+              </>
+              <div className="flex border-b-[1px] border-gray-300">
+                <p className="basis-2/3 p-4 font-semibold">Total</p>
+                <p className="basis-1/3 p-4 font-semibold text-lg">
+                  ₦{totalBookingPrice}
+                </p>
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                className="mt-8 uppercase py-2.5 px-10 font-mavenPro font-semibold cursor-pointer text-white bg-secondaryBackground w-full md:w-fit text-center rounded"
+              >
+                {isLoading ? "Please wait..." : "Place Booking"}
+              </button>
             </div>
           </div>
-        </div>
+        </form>
       </section>
       <Footer />
+      <Toast ref={toast} />
     </>
   );
 };

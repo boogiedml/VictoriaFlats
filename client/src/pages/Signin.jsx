@@ -38,14 +38,17 @@ const Signin = () => {
         const { data } = await axios.post(url, values);
         if (!data.error) {
           const { token, adminId } = data.data;
-          Cookies.set("__anne_____Lousia", token);
-          Cookies.set("__e-kom__dkmi", adminId);
+          Cookies.set("__victoria_____Flats", token);
+          Cookies.set("__e-kom__ijuinnikkk__", adminId);
           navigate("/admin");
         }
       } catch (err) {
+        console.log(err);
         const errorMessage =
           err.message === "Network Error"
             ? err.message
+            : err.response.status === 404
+            ? "Account not found!"
             : err?.response?.data?.message;
         showError({ msgContent: errorMessage });
       } finally {
@@ -58,7 +61,7 @@ const Signin = () => {
     <>
       <Navbar />
       <section className="px-5 md:px-10 lg:px-14 xl:px-20 pt-32 pb-14 md:pb-20">
-        <h2 className="text-3xl lg:text-4xl font-playFair text-headerTextColor font-semibold">
+        <h2 className="text-2xl lg:text-3xl font-syne text-headerTextColor font-semibold">
           Admin Login
         </h2>
         <div className="mt-8 md:mt-14">

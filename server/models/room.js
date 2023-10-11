@@ -18,15 +18,6 @@ const roomSchema = mongoose.Schema({
     type: Number,
     default: 0,
   },
-  address: {
-    type: String,
-    required: true,
-  },
-  amenities: [
-    {
-      type: String,
-    },
-  ],
 });
 
 roomSchema.virtual("id").get(function () {

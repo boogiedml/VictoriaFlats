@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 import Room from "../models/room.js";
 import { v2 as cloudinary } from "cloudinary";
 
@@ -14,7 +16,7 @@ const getAllRooms = async (req, res) => {
 
     res.status(200).json({
       error: false,
-      romms: roomList,
+      rooms: roomList,
     });
   } catch (error) {
     console.error(error);
@@ -45,8 +47,6 @@ const addRoom = async (req, res) => {
     const room = new Room({
       name: req.body.name,
       pricePerNight: req.body.pricePerNight,
-      address: req.body.address,
-      amenities: req.body.amenities || [],
     });
 
     const newRoom = await room.save();
@@ -84,7 +84,7 @@ const updateRoom = async (req, res) => {
       });
     }
 
-    const { name, image, pricePerNight, address, amenities } = req.body;
+    const { name, image, pricePerNight } = req.body;
 
     const room = await Room.findById(id);
     if (!room) {
@@ -95,7 +95,8 @@ const updateRoom = async (req, res) => {
     }
 
     let roomImage = room.image;
-    if (image) {
+    const file = req.file;
+    if (file) {
       const result = await cloudinary.uploader.upload(image.path);
       roomImage = result.secure_url;
     }
@@ -106,8 +107,6 @@ const updateRoom = async (req, res) => {
         name,
         image: roomImage,
         pricePerNight: pricePerNight || 0,
-        address,
-        amenities: amenities || [],
       },
       { new: true }
     );

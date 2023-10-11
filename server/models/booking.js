@@ -6,6 +6,18 @@ const BookingSchema = new mongoose.Schema({
     ref: "Room",
     required: true,
   },
+  name: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+  },
+  phone: {
+    type: String,
+    required: true,
+  },
   checkInDate: {
     type: Date,
     required: true,
@@ -20,6 +32,9 @@ const BookingSchema = new mongoose.Schema({
   },
   totalPrice: {
     type: Number,
+  },
+  trnRef: {
+    type: String,
   },
   status: {
     type: String,

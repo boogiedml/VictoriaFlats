@@ -14,21 +14,16 @@ const RoomCard = ({
   roomName,
   roomPrice,
   admin,
+  onDelete,
 }) => {
   const [isBookingDetailsOpen, setIsBookingDetailsOpen] = useState(false);
-
   const openBookingDetails = () => {
-    setIsBookingDetailsOpen(true);
+    !admin && setIsBookingDetailsOpen(true);
   };
 
   // Admin
   const handleDelete = () => {
-    onDelete(productDetails._id);
-  };
-
-  const handleImageClick = () => {
-    setModalImage(productDetails?.image);
-    setIsModalOpen(true);
+    onDelete(room._id);
   };
 
   const closeModal = () => {
@@ -44,12 +39,12 @@ const RoomCard = ({
             <img
               src={imgUrl}
               alt={roomName}
-              className="object-cover w-full h-full rounded-lg group-hover:blur-sm"
+              className="object-cover w-full h-full rounded-lg lg:group-hover:blur-sm"
             />
           </div>
 
           {!admin && (
-            <div className="w-full h-full absolute z-10 hidden md:flex items-center justify-center">
+            <div className="w-full h-full absolute z-10 hidden lg:flex items-center justify-center">
               <button
                 onClick={openBookingDetails}
                 className="absolute p-4 bg-white rounded-full cursor-pointer hover:bg-secondaryBackground hover:text-white scale-0 group-hover:scale-100 transition duration-700"
@@ -59,8 +54,7 @@ const RoomCard = ({
             </div>
           )}
           {admin && (
-            // <Link to={`/admin/edit_product/${productDetails._id}`}>
-            <Link to={`/admin/edit_product/inunin`}>
+            <Link to={`/admin/edit_room/${room?.id}`}>
               <span className="absolute right-3 top-3 z-10 p-4 rounded-full cursor-pointer bg-secondaryBackground text-white text-base hover:translate-y-1 transition-all duration-300">
                 <FiEdit2 />
               </span>
@@ -86,8 +80,18 @@ const RoomCard = ({
             {roomName}
           </p>
           <p className="font-semibold text-base font-mavenPro text-mainTextColor">
-            ₦{roomPrice} a Night
+            ₦{roomPrice} {!admin && <span>a Night</span>}
           </p>
+          {!admin && (
+            <div className="flex lg:hidden justify-end mt-2">
+              <button
+                onClick={openBookingDetails}
+                className="uppercase py-2.5 px-10 font-syne text-xs font-semibold cursor-pointer text-white bg-secondaryBackground w-fit rounded"
+              >
+                View more
+              </button>
+            </div>
+          )}
         </div>
       </main>
       <>

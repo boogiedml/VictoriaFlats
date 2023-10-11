@@ -1,14 +1,28 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Navbar, Footer, Header } from "../containers";
 import { ButtonLink, ProductCard } from "../components";
 import { useNavigate } from "react-router-dom";
-import { rooms } from "../assets/constants";
 import one from "../assets/header--img.jpeg";
 import three from "../assets/three.jpeg";
 import two from "../assets/two.jpeg";
+import axios from "../../api/axios";
 
 const Landing = () => {
   const navigate = useNavigate();
+  const [rooms, setRooms] = useState([]);
+
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const response = await axios.get("/rooms");
+        setRooms(response?.data?.rooms);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchRooms();
+  }, []);
 
   return (
     <>
@@ -124,21 +138,21 @@ const Landing = () => {
           Special Offers
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
-          {rooms.map((p, i) => (
+          {rooms.map((r, i) => (
             <ProductCard
               key={i}
-              room={p}
-              imgUrl={p.imgUrl}
-              roomCategory={p.roomType}
-              roomName={p.roomName}
-              roomPrice={p.roomPrice}
+              room={r}
+              imgUrl={r.image}
+              roomCategory="Rent"
+              roomName={r.name}
+              roomPrice={r.pricePerNight}
             />
           ))}
         </div>
         <div className="flex justify-end">
           <div
-            onClick={() => navigate("/rentals")}
-            className="mt-8 uppercase py-2.5 px-10 font-syne text-sm md:text-base font-semibold cursor-pointer text-white bg-secondaryBackground w-fit rounded"
+            onClick={() => navigate("/rooms")}
+            className="mt-8 uppercase py-2.5 px-10 font-syne text-xs md:text-sm font-semibold cursor-pointer text-white bg-secondaryBackground w-fit rounded"
           >
             View all
           </div>
