@@ -29,6 +29,7 @@ const Checkout = () => {
     if (storedBooking) {
       setBookingDetails([storedBooking]);
     }
+    checkoutFormik.setFieldValue("room", storedBooking.roomId);
   }, []);
 
   const calculateHourDifference = () => {
@@ -78,9 +79,7 @@ const Checkout = () => {
       checkOutDate: Yup.string().required("Check-out date is required"),
     }),
     onSubmit: async (values) => {
-      console.log("in");
       console.log(values);
-      return;
       setIsLoading(true);
       const url = "/bookings";
       const config = {
@@ -109,10 +108,9 @@ const Checkout = () => {
   });
 
   useEffect(() => {
-    checkoutFormik.setFieldValue("room", bookingDetails.roomId);
     checkoutFormik.setFieldValue("checkInDate", fromDateTime);
     checkoutFormik.setFieldValue("checkOutDate", toDateTime);
-  }, [fromDateTime, toDateTime]);
+  }, [toDateTime, fromDateTime]);
 
   return (
     <>
@@ -148,7 +146,14 @@ const Checkout = () => {
                 defaultValue={checkoutFormik.values.phone}
                 onBlur={checkoutFormik.handleBlur}
               />
-              <Input label="No of guests" placeholder="No of guests" />
+              <Input
+                label="No of guests"
+                placeholder="No of guests"
+                name="guests"
+                onChange={checkoutFormik.handleChange}
+                defaultValue={checkoutFormik.values.guests}
+                onBlur={checkoutFormik.handleBlur}
+              />
               <Input
                 label="Check In"
                 type="datetime-local"

@@ -7,3 +7,4 @@ export { default as Signin } from "./Signin";
 export { default as AdminDashboard } from "./AdminDashboard";
 export { default as AddRoom } from "./AddRoom";
 export { default as UpdateRoom } from "./UpdateRoom";
+export { default as BookingConfirmation } from "./BookingConfirmation";

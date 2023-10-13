@@ -10,7 +10,7 @@ const bookingPayment = async ({ email, name, amount, bookingId }) => {
       email,
       name,
       amount: amount * 100,
-      callback_url: `https://victoria-flats.onrender.com/order-confirmation/${bookingId}`,
+      callback_url: `https://victoria-flats.onrender.com/booking-confirmation/${bookingId}`,
     });
 
     console.log(paystackResponse);
