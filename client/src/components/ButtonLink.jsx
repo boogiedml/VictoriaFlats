@@ -2,7 +2,6 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const ButtonLink = ({ title, onClick, textColor, width }) => {
-  const navigate = useNavigate();
   return (
     <div
       className={`button__link group relative bg-transparent ${

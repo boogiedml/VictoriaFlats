@@ -16,7 +16,7 @@ const NavMenu = ({ menu }) => {
   return (
     <div className="fixed bg-white z-20 w-full h-full lg:hidden px-5 md:px-10 lg:px-14 xl:px-20 py-10 pt-28">
       <div className="flex justify-end">
-        <ButtonLink title="Sign In" link="/signin" width="w-fit" />
+        <ButtonLink title="Sign In" onClick={() => navigate("/signin")} width="w-fit" />
       </div>
     </div>
   );
