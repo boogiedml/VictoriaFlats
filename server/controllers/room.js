@@ -97,7 +97,7 @@ const updateRoom = async (req, res) => {
     let roomImage = room.image;
     const file = req.file;
     if (file) {
-      const result = await cloudinary.uploader.upload(image.path);
+      const result = await cloudinary.uploader.upload(file.path);
       roomImage = result.secure_url;
     }
 

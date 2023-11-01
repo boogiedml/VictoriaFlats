@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 const RoomBookingDetails = ({ room, closeDetails }) => {
-  console.log(room);
   const navigate = useNavigate();
   const [bookingDetails, setBookingDetails] = useState(null);
 
@@ -24,7 +23,7 @@ const RoomBookingDetails = ({ room, closeDetails }) => {
       roomPrice: room.pricePerNight,
     };
 
-    localStorage.setItem("booking", JSON.stringify(booking));
+    localStorage.setItem("booking", JSON.stringify(booking)); 
     setBookingDetails(booking);
     navigate("/checkout");
   };

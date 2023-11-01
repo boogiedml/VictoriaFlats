@@ -9,6 +9,8 @@ const verifyJwt = (req, res, next) => {
     { path: `${apiRoute}/admin/register`, method: "POST" },
     { path: `${apiRoute}/bookings`, method: "GET" },
     { path: `${apiRoute}/rooms`, method: "GET" },
+    { path: `${apiRoute}/bookings`, method: "POST" },
+    { path: `${apiRoute}/bookings`, method: "PUT" },
   ];
 
   const isPublicRoute = publicRoutes.some(

@@ -28,7 +28,6 @@ const RoomCard = ({
 
   const closeModal = () => {
     setIsBookingDetailsOpen(false);
-    setModalImage("");
   };
 
   return (

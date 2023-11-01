@@ -14,7 +14,7 @@ const BookingConfirmation = () => {
     const updateOrder = async () => {
       setIsLoading(true);
       try {
-        await axios.put(`/orders/${id}`);
+        await axios.put(`/bookings/${id}`);
         setIsSuccess(true);
         localStorage.clear();
       } catch (error) {
@@ -46,7 +46,7 @@ const BookingConfirmation = () => {
             {isSuccess ? (
               <BsPatchCheckFill
                 size={60}
-                className="text-secondaryBackground mx-auto mb-8"
+                className="text-green-800 mx-auto mb-8"
               />
             ) : (
               <BsFillPatchExclamationFill

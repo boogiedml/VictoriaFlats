@@ -79,7 +79,6 @@ const Checkout = () => {
       checkOutDate: Yup.string().required("Check-out date is required"),
     }),
     onSubmit: async (values) => {
-      console.log(values);
       setIsLoading(true);
       const url = "/bookings";
       const config = {
